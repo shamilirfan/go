@@ -37,4 +37,11 @@ func Slice() {
 	var slice6 []int
 
 	fmt.Println(slice6)
+
+	// add new element in slice
+	color := []string{"Red", "Green", "Blue"}
+	color = append(color, "Yellow", "Pink")
+	color = append([]string{"Black"}, color...)
+
+	fmt.Println(color)
 }
