@@ -21,7 +21,7 @@ func vogusDataType() {
 	fmt.Println(c)
 	fmt.Printf("%.2f\n", d) // %f is floating format.
 	fmt.Print(e, "\n")
-	fmt.Printf("%c\n", smile) // %c is rune format.
+	fmt.Printf("%c\n", smile) // %c is rune/character format.
 	fmt.Printf("%c\n", f)
 	fmt.Printf("%T", f) // %T is type format.
 
