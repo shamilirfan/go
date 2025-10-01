@@ -29,4 +29,3 @@ These topic have become learnt :-
 16. slice
 17. vogus data type
 18. defer
-
