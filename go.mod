@@ -1,3 +1,3 @@
-module shamil.com
+module ecommerce
 
 go 1.25.1

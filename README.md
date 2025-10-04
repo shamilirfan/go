@@ -8,6 +8,8 @@ Packages :-
 
 1. go mod init name
 2. custom package import - import "modName/packageName"
+3. fmt
+4. net/http
 
 These topic have become learnt :-
 
