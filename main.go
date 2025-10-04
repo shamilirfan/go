@@ -29,8 +29,10 @@ type Product struct {
 var productList []Product
 
 // product handler
-func productHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "GET" {
+func getProducts(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*") // * meanes anyone access from anywhere
+	w.Header().Set("Content-Type", "application/json")
+	if r.Method != http.MethodGet {
 		fmt.Println(w, "Please give a get request.", 400)
 		return
 	}
@@ -45,7 +47,7 @@ func main() {
 
 	// router/endpoint
 	mux.HandleFunc("/", homeHandler)
-	mux.HandleFunc("/products", productHandler)
+	mux.HandleFunc("/products", getProducts)
 
 	// server listening
 	fmt.Println("Server is running on http://localhost" + PORT)
