@@ -12,7 +12,7 @@ import (
 var PORT string = ":8080"
 
 // home handler
-func homeHandler(w http.ResponseWriter, r *http.Request) {
+func homePage(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, "Home Page")
 }
 
@@ -28,12 +28,12 @@ type Product struct {
 // slice define
 var productList []Product
 
-// product handler
+// get product handler
 func getProducts(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "*") // * meanes anyone access from anywhere
+	w.Header().Set("Access-Control-Allow-Origin", "*") // * meanes any IP Address can access
 	w.Header().Set("Content-Type", "application/json")
-	if r.Method != http.MethodGet {
-		fmt.Println(w, "Please give a get request.", 400)
+	if r.Method != "GET" {
+		http.Error(w, "Please give a GET request.", 400)
 		return
 	}
 
@@ -42,12 +42,37 @@ func getProducts(w http.ResponseWriter, r *http.Request) {
 	encoder.Encode(productList)   // productList কে JSON format এ convert করে
 }
 
+// create product handler
+func createProduct(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "application/json")
+
+	if r.Method != "POST" {
+		http.Error(w, "Please give me a POST request", 400)
+	}
+
+	var newProduct Product
+
+	// Decode
+	err := json.NewDecoder(r.Body).Decode(&newProduct)
+	if err != nil {
+		http.Error(w, "Please give me a valid json", 400)
+		return
+	}
+	newProduct.ID = len(productList) + 1
+	productList = append(productList, newProduct)
+
+	// Encode
+	json.NewEncoder(w).Encode(productList)
+}
+
 func main() {
 	mux := http.NewServeMux()
 
 	// router/endpoint
-	mux.HandleFunc("/", homeHandler)
+	mux.HandleFunc("/", homePage)
 	mux.HandleFunc("/products", getProducts)
+	mux.HandleFunc("/createProduct", createProduct)
 
 	// server listening
 	fmt.Println("Server is running on http://localhost" + PORT)
@@ -58,47 +83,45 @@ func main() {
 }
 
 func init() {
-	// Struct instance/object create
-	product1 := Product{
-		ID:          1,
-		Title:       "Orange",
-		Description: "Orange is very jucy. I don't like it.",
-		Price:       120,
-		ImageURL:    "https://www.croq-kilos.com/sites/default/files/styles/1920px/public/2025-03/26505-3228-tout-savoir-sur-lorange-un-tresor-de-vitamines-et-bien-plus-encore.jpg",
-	}
-	product2 := Product{
-		ID:          2,
-		Title:       "Apple",
-		Description: "Apple is red. I feel boring eating apple.",
-		Price:       210,
-		ImageURL:    "https://cdn.britannica.com/60/5760-050-FCD7CDA2/Apples-Malus-domestica.jpg",
-	}
-	product3 := Product{
-		ID:          3,
-		Title:       "Banana",
-		Description: "Banana is yellow. I like it's smell.",
-		Price:       40,
-		ImageURL:    "https://images.contentstack.io/v3/assets/bltcedd8dbd5891265b/blt66b8f1f45d70de9e/6665ec0febbbaa7d99a9f533/4440854-Banana-hero.jpg?q=70&width=3840&auto=webp",
-	}
-	product4 := Product{
-		ID:          4,
-		Title:       "Mango",
-		Description: "Mango is so yummy. I love mango.",
-		Price:       145,
-		ImageURL:    "https://blog2.pittmandavis.com/wp-content/uploads/2023/07/MangoFinal.jpg",
-	}
-	product5 := Product{
-		ID:          5,
-		Title:       "Grapes",
-		Description: "Grapes is testy. I like it.",
-		Price:       370,
-		ImageURL:    "https://img.ksl.com/slc/2513/251331/25133147.jpg?filter=kslv2/responsive_story_lg",
+	// create struct instance/object
+	products := []Product{
+		{
+			ID:          1,
+			Title:       "Orange",
+			Description: "Orange is very jucy. I don't like it.",
+			Price:       120,
+			ImageURL:    "https://www.croq-kilos.com/sites/default/files/styles/1920px/public/2025-03/26505-3228-tout-savoir-sur-lorange-un-tresor-de-vitamines-et-bien-plus-encore.jpg",
+		},
+		{
+			ID:          2,
+			Title:       "Apple",
+			Description: "Apple is red. I feel boring eating apple.",
+			Price:       210,
+			ImageURL:    "https://cdn.britannica.com/60/5760-050-FCD7CDA2/Apples-Malus-domestica.jpg",
+		},
+		{
+			ID:          3,
+			Title:       "Banana",
+			Description: "Banana is yellow. I like it's smell.",
+			Price:       40,
+			ImageURL:    "https://images.contentstack.io/v3/assets/bltcedd8dbd5891265b/blt66b8f1f45d70de9e/6665ec0febbbaa7d99a9f533/4440854-Banana-hero.jpg?q=70&width=3840&auto=webp",
+		},
+		{
+			ID:          4,
+			Title:       "Mango",
+			Description: "Mango is so yummy. I love mango.",
+			Price:       145,
+			ImageURL:    "https://blog2.pittmandavis.com/wp-content/uploads/2023/07/MangoFinal.jpg",
+		},
+		{
+			ID:          5,
+			Title:       "Grapes",
+			Description: "Grapes is testy. I like it.",
+			Price:       370,
+			ImageURL:    "https://img.ksl.com/slc/2513/251331/25133147.jpg?filter=kslv2/responsive_story_lg",
+		},
 	}
 
 	// append instance/object
-	productList = append(productList, product1)
-	productList = append(productList, product2)
-	productList = append(productList, product3)
-	productList = append(productList, product4)
-	productList = append(productList, product5)
+	productList = append(productList, products...)
 }
