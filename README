@@ -1,0 +1,37 @@
+Command Line :-
+
+1. go build main.go
+2. ./main
+3. go run main.go
+
+Packages :-
+
+1. go mod init name
+2. custom package import - import "modName/packageName"
+3. custom package import - import "modName/packageName"
+4. "net/http"
+5. "fmt"
+6. "encoding/json"
+7. "strconv"
+
+These topic have become learnt :-
+
+1. User input
+2. variable
+3. variable shadowing
+4. if else
+5. switch
+6. Standard/Simple named function with paramiter and argument
+7. init function
+8. anonymous function
+9. function expression
+10. higher order function
+11. return function
+12. named return function
+13. struct
+14. array
+15. pointer
+16. slice
+17. vogus data type
+18. defer
+19. go rutine
