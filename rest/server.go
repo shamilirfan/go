@@ -1,14 +1,16 @@
-package cmd
+package rest
 
 import (
-	"ecommerce/middleware"
+	"ecommerce/config"
+	"ecommerce/rest/middleware"
 	"fmt"
 	"net/http"
+	"os"
 )
 
-func Server() {
+func Start(cnf config.Config) {
 	// port number
-	var PORT string = ":8080"
+	var PORT string = ":" + fmt.Sprintf("%d", config.GetConfig().HttpPort)
 
 	// call routes/endpoint
 	manager := middleware.NewManager()
@@ -29,5 +31,6 @@ func Server() {
 	// error handling
 	if err != nil {
 		fmt.Println("Error starting the server", err)
+		os.Exit(1)
 	}
 }

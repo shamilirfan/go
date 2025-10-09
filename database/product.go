@@ -1,5 +1,9 @@
 package database
 
+// Product List
+var productList []Product
+
+// struct define
 type Product struct {
 	ID          int     `json:"id"` // = it is called tag
 	Title       string  `json:"title"`
@@ -8,7 +12,33 @@ type Product struct {
 	ImageURL    string  `json:"imageUrl"`
 }
 
-var ProductList []Product
+func Store(p Product) {
+	productList = append(productList, p)
+}
+
+func List() []Product {
+	return productList
+}
+
+// Get
+func Get(productID int) *Product {
+	for _, product := range productList {
+		if productID == product.ID {
+			return &product
+		}
+	}
+	return nil
+}
+
+// Update
+func Update() {
+
+}
+
+// Delete
+func Delete() {
+
+}
 
 func init() {
 	// create struct instance/object
@@ -51,5 +81,5 @@ func init() {
 	}
 
 	// append instance/object
-	ProductList = append(ProductList, products...)
+	productList = append(productList, products...)
 }
