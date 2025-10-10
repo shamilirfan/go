@@ -12,8 +12,10 @@ type Product struct {
 	ImageURL    string  `json:"imageUrl"`
 }
 
-func Store(p Product) {
-	productList = append(productList, p)
+func Store(product Product) Product {
+	product.ID = len(productList) + 1
+	productList = append(productList, product)
+	return product
 }
 
 func List() []Product {
@@ -22,22 +24,34 @@ func List() []Product {
 
 // Get
 func Get(productID int) *Product {
-	for _, product := range productList {
-		if productID == product.ID {
-			return &product
+	for _, value := range productList {
+		if productID == value.ID {
+			return &value
 		}
 	}
 	return nil
 }
 
 // Update
-func Update() {
-
+func Update(product Product) {
+	for intdex, value := range productList {
+		if value.ID == product.ID {
+			productList[intdex] = product
+		}
+	}
 }
 
 // Delete
-func Delete() {
+func Delete(productID Product) {
+	var temp []Product
 
+	for _, value := range productList {
+		if value.ID != productID.ID {
+			temp = append(temp, value)
+		}
+	}
+
+	productList = append(productList, temp...)
 }
 
 func init() {

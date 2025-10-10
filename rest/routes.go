@@ -12,7 +12,7 @@ func Routes(mux *http.ServeMux, manager *middleware.Manager) {
 			http.HandlerFunc(handlers.GetProducts),
 		),
 	)
-	mux.Handle("GET /products/{productID}",
+	mux.Handle("GET /products/{id}",
 		manager.With(
 			http.HandlerFunc(handlers.GetProductByID),
 		),
@@ -20,6 +20,11 @@ func Routes(mux *http.ServeMux, manager *middleware.Manager) {
 	mux.Handle("POST /products",
 		manager.With(
 			http.HandlerFunc(handlers.CreateProduct),
+		),
+	)
+	mux.Handle("PUT /products/{id}",
+		manager.With(
+			http.HandlerFunc(handlers.UpdateProduct),
 		),
 	)
 }

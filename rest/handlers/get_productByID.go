@@ -2,13 +2,13 @@ package handlers
 
 import (
 	"ecommerce/database"
-	"encoding/json"
+	"ecommerce/util"
 	"net/http"
 	"strconv"
 )
 
 func GetProductByID(w http.ResponseWriter, r *http.Request) {
-	productID := r.PathValue("productID")
+	productID := r.PathValue("id")
 	id, err := strconv.Atoi(productID)
 
 	if err != nil {
@@ -16,12 +16,12 @@ func GetProductByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	for index, value := range database.ProductList {
-		if id == value.ID {
-			json.NewEncoder(w).Encode(database.ProductList[index])
-			return
-		}
+	product := database.Get(id)
+
+	if product == nil {
+		util.SendData(w, "Product Not Found!!!", 404)
+		return
 	}
 
-	http.Error(w, "Not Found!!!", 404)
+	util.SendData(w, product, 200)
 }
