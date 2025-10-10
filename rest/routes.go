@@ -27,4 +27,9 @@ func Routes(mux *http.ServeMux, manager *middleware.Manager) {
 			http.HandlerFunc(handlers.UpdateProduct),
 		),
 	)
+	mux.Handle("DELETE /products/{id}",
+		manager.With(
+			http.HandlerFunc(handlers.DeleteProduct),
+		),
+	)
 }

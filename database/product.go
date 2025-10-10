@@ -42,16 +42,16 @@ func Update(product Product) {
 }
 
 // Delete
-func Delete(productID Product) {
+func Delete(productID int) {
 	var temp []Product
 
 	for _, value := range productList {
-		if value.ID != productID.ID {
+		if value.ID != productID {
 			temp = append(temp, value)
 		}
 	}
 
-	productList = append(productList, temp...)
+	productList = temp
 }
 
 func init() {
