@@ -17,36 +17,32 @@ type Config struct {
 }
 
 func loadConfig() {
-	err := godotenv.Load()
-
-	if err != nil {
-		fmt.Println("Failed to load the env variables", err)
-	}
-
+	err_1 := godotenv.Load()
 	version := os.Getenv("VERSION")
+	serviceName := os.Getenv("SERVICE_NAME")
+	httpPort := os.Getenv("HTTP_PORT")
+	port, err_2 := strconv.ParseInt(httpPort, 10, 64)
+
+	if err_1 != nil {
+		fmt.Println("Failed to load the env variables", err_1)
+	}
 
 	if version == "" {
 		fmt.Println("Version is required")
 		os.Exit(1)
 	}
 
-	serviceName := os.Getenv("SERVICE_NAME")
-
 	if serviceName == "" {
 		fmt.Println("Service Name is required")
 		os.Exit(1)
 	}
-
-	httpPort := os.Getenv("HTTP_PORT")
 
 	if httpPort == "" {
 		fmt.Println("Http port is required")
 		os.Exit(1)
 	}
 
-	port, err := strconv.ParseInt(httpPort, 10, 64)
-
-	if err != nil {
+	if err_2 != nil {
 		fmt.Println("Port must be number")
 	}
 

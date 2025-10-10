@@ -12,7 +12,7 @@ func Start(cnf config.Config) {
 	// port number
 	var PORT string = ":" + fmt.Sprintf("%d", config.GetConfig().HttpPort)
 
-	// call routes/endpoint
+	// use middleware
 	manager := middleware.NewManager()
 	manager.Use(
 		middleware.CorsWithPreflight,
