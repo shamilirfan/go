@@ -2,27 +2,48 @@ package rest
 
 import (
 	"ecommerce/config"
-	"ecommerce/rest/middleware"
+	"ecommerce/rest/handlers/product"
+	"ecommerce/rest/handlers/user"
+	"ecommerce/rest/middlewares"
 	"fmt"
 	"net/http"
 	"os"
 )
 
-func Start(cnf config.Config) {
+type Server struct {
+	config         *config.Config
+	productHandler *product.Handler
+	userHandler    *user.Handler
+}
+
+func NewServer(
+	config *config.Config,
+	productHandler *product.Handler,
+	userHandler *user.Handler,
+) *Server {
+	return &Server{
+		productHandler: productHandler,
+		userHandler:    userHandler,
+	}
+}
+
+func (server *Server) Start() {
 	// port number
 	var PORT string = ":" + fmt.Sprintf("%d", config.GetConfig().HttpPort)
 
 	// use middleware
-	manager := middleware.NewManager()
+	manager := middlewares.NewManager()
 	manager.Use(
-		middleware.CorsWithPreflight,
-		middleware.Logger,
+		middlewares.CorsWithPreflight,
+		middlewares.Logger,
 	)
 
 	// create router
 	mux := http.NewServeMux()
 	wrappedMux := manager.WrapMux(mux)
-	Routes(mux, manager)
+
+	server.productHandler.RegisterRoutes(mux, manager)
+	server.userHandler.RegisterRoutes(mux, manager)
 
 	// server listening
 	fmt.Println("Server running on http://localhost" + PORT)
