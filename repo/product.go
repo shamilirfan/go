@@ -1,9 +1,5 @@
-package database
+package repo
 
-// Product List
-var productList []Product
-
-// struct define
 type Product struct {
 	ID          int     `json:"id"` // = it is called tag
 	Title       string  `json:"title"`
@@ -12,51 +8,69 @@ type Product struct {
 	ImageURL    string  `json:"imageUrl"`
 }
 
-func List() []Product {
-	return productList
+type ProductRepo interface {
+	Get(productID int) (*Product, error)
+	Create(product Product) (*Product, error)
+	Update(product Product) (*Product, error)
+	Delete(productID int) error
+	List() ([]*Product, error)
 }
 
-func Store(product Product) Product {
-	product.ID = len(productList) + 1
-	productList = append(productList, product)
-	return product
+type productRepo struct {
+	productList []*Product
 }
 
-// Get
-func Get(productID int) *Product {
-	for _, value := range productList {
+// Constructor or Constructor function. It creates an object of struct.
+func NewProductRepo() ProductRepo {
+	repo := &productRepo{}
+	generateProduct(repo)
+	return repo
+}
+
+func (r *productRepo) Get(productID int) (*Product, error) {
+	for _, value := range r.productList {
 		if productID == value.ID {
-			return &value
+			return value, nil
 		}
 	}
-	return nil
+	return nil, nil
 }
 
-// Update
-func Update(product Product) {
-	for intdex, value := range productList {
+func (r *productRepo) Create(product Product) (*Product, error) {
+	product.ID = len(r.productList) + 1
+	r.productList = append(r.productList, &product)
+	return &product, nil
+}
+
+func (r *productRepo) Update(product Product) (*Product, error) {
+	for intdex, value := range r.productList {
 		if value.ID == product.ID {
-			productList[intdex] = product
+			r.productList[intdex] = &product
 		}
 	}
+	return nil, nil
 }
 
-// Delete
-func Delete(productID int) {
-	var tempList []Product
+func (r *productRepo) Delete(productID int) error {
+	var tempList []*Product
 
-	for _, value := range productList {
+	for _, value := range r.productList {
 		if value.ID != productID {
 			tempList = append(tempList, value)
 		}
 	}
 
-	productList = tempList
+	r.productList = tempList
+	return nil
 }
 
-func init() {
+func (r *productRepo) List() ([]*Product, error) {
+	return r.productList, nil
+}
+
+func generateProduct(r *productRepo) {
 	// create struct instance/object
-	products := []Product{
+	products := []*Product{
 		{
 			ID:          1,
 			Title:       "Orange",
@@ -95,5 +109,5 @@ func init() {
 	}
 
 	// append instance/object
-	productList = append(productList, products...)
+	r.productList = append(r.productList, products...)
 }

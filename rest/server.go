@@ -22,6 +22,7 @@ func NewServer(
 	userHandler *user.Handler,
 ) *Server {
 	return &Server{
+		config:         config,
 		productHandler: productHandler,
 		userHandler:    userHandler,
 	}
