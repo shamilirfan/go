@@ -6,5 +6,12 @@ import (
 )
 
 func (h *Handler) GetProducts(w http.ResponseWriter, r *http.Request) {
-	util.SendData(w, h.productRepo.List, 200)
+	products, err := h.productRepo.List()
+
+	if err != nil {
+		util.SendError(w, "Internal Server Error", http.StatusBadRequest)
+		return
+	}
+
+	util.SendData(w, products, http.StatusOK)
 }

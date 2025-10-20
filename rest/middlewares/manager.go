@@ -22,9 +22,9 @@ func (manager *Manager) Use(middlewares ...Middleware) *Manager {
 func (manager *Manager) With(handler http.Handler, middlewares ...Middleware) http.Handler {
 	h := handler
 
-	// for _, middleware := range middlewares {
-	// 	h = middleware(h)
-	// }
+	for _, middleware := range middlewares {
+		h = middleware(h)
+	}
 
 	return h
 }

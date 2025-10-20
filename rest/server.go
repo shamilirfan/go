@@ -30,7 +30,7 @@ func NewServer(
 
 func (server *Server) Start() {
 	// port number
-	var PORT string = ":" + fmt.Sprintf("%d", config.GetConfig().HttpPort)
+	var PORT string = ":" + fmt.Sprintf("%d", server.config.HttpPort)
 
 	// use middleware
 	manager := middlewares.NewManager()

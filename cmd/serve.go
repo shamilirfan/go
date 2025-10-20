@@ -14,12 +14,16 @@ func Serve() {
 	middlewares := middlewares.NewMiddlewares(config)
 
 	productRepo := repo.NewProductRepo()
-	productHandler := product.NewHandler(*middlewares, productRepo)
-
 	userRepo := repo.NewUserRepo()
-	userHandler := user.NewHandler(userRepo)
 
-	server := rest.NewServer(config, productHandler, userHandler)
+	productHandler := product.NewHandler(*middlewares, productRepo)
+	userHandler := user.NewHandler(*config, userRepo)
+
+	server := rest.NewServer(
+		config,
+		productHandler,
+		userHandler,
+	)
 
 	server.Start()
 }
