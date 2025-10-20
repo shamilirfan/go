@@ -17,6 +17,8 @@ Packages :-
 9. "os"
 10. "github.com/joho/godotenv"
 11. "log"
+12. "github.com/jmoiron/sqlx"
+13.	_ "github.com/lib/pq"
 
 These topic have become learnt :-
 
