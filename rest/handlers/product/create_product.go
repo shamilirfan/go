@@ -15,14 +15,14 @@ func (h *Handler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&newProduct)
 
 	if err != nil {
-		http.Error(w, "Please give me a valid json", http.StatusBadRequest)
+		util.SendError(w, "Please give me a valid json", http.StatusBadRequest)
 		return
 	}
 
 	createdProduct, err := h.productRepo.Create(newProduct)
 
 	if err != nil {
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		util.SendError(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
