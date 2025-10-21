@@ -1,11 +1,17 @@
 package repo
 
+import (
+	"database/sql"
+
+	"github.com/jmoiron/sqlx"
+)
+
 type Product struct {
-	ID          int     `json:"id"` // = it is called tag
-	Title       string  `json:"title"`
-	Description string  `json:"description"`
-	Price       float32 `json:"price"`
-	ImageURL    string  `json:"imageUrl"`
+	ID          int     `json:"id" db:"id"` // = it is called tag
+	Title       string  `json:"title" db:"title"`
+	Description string  `json:"description" db:"description"`
+	Price       float32 `json:"price" db:"price"`
+	ImageURL    string  `json:"imageUrl" db:"img_url"`
 }
 
 type ProductRepo interface {
@@ -17,97 +23,97 @@ type ProductRepo interface {
 }
 
 type productRepo struct {
-	productList []*Product
+	db *sqlx.DB
 }
 
 // Constructor or Constructor function. It creates an object of struct.
-func NewProductRepo() ProductRepo {
-	repo := &productRepo{}
-	generateProduct(repo)
-	return repo
+func NewProductRepo(db *sqlx.DB) ProductRepo {
+	return &productRepo{
+		db: db,
+	}
 }
 
 func (r *productRepo) Get(productID int) (*Product, error) {
-	for _, value := range r.productList {
-		if productID == value.ID {
-			return value, nil
+	var product Product
+
+	query := `
+	SELECT id, title, description, price, img_url 
+	FROM product 
+	WHERE id = $1
+	`
+	err := r.db.Get(&product, query, productID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
 		}
 	}
-	return nil, nil
+
+	return &product, err
 }
 
 func (r *productRepo) Create(product Product) (*Product, error) {
-	product.ID = len(r.productList) + 1
-	r.productList = append(r.productList, &product)
+	query := `
+	INSERT INTO product (
+	title,
+	description,
+	price,
+	img_url
+	)
+	VALUES(
+	$1,
+	$2,
+	$3,
+	$4
+	)
+	RETURNING id
+	`
+	row := r.db.QueryRow(query, product.Title, product.Description, product.Price, product.ImageURL)
+	err := row.Scan(&product.ID)
+	if err != nil {
+		return nil, err
+	}
+
 	return &product, nil
 }
 
 func (r *productRepo) Update(product Product) (*Product, error) {
-	for intdex, value := range r.productList {
-		if value.ID == product.ID {
-			r.productList[intdex] = &product
-		}
+	query := `
+	UPDATE product
+	SET title =$1, description =$2, price =$3, img_url =$4
+	WHERE id = $5
+	`
+	row := r.db.QueryRow(query, product.Title, product.Description, product.Price, product.ImageURL)
+	err := row.Err()
+	if err != nil {
+		return nil, err
 	}
-	return nil, nil
+
+	return &product, nil
 }
 
 func (r *productRepo) Delete(productID int) error {
-	var tempList []*Product
-
-	for _, value := range r.productList {
-		if value.ID != productID {
-			tempList = append(tempList, value)
-		}
+	query := `
+	DELETE FROM product WHERE id = $1
+	`
+	_, err := r.db.Exec(query, productID)
+	if err != nil {
+		return err
 	}
 
-	r.productList = tempList
 	return nil
 }
 
 func (r *productRepo) List() ([]*Product, error) {
-	return r.productList, nil
-}
+	var productList []*Product
 
-func generateProduct(r *productRepo) {
-	// create struct instance/object
-	products := []*Product{
-		{
-			ID:          1,
-			Title:       "Orange",
-			Description: "Orange is very jucy. I don't like it.",
-			Price:       120,
-			ImageURL:    "https://www.croq-kilos.com/sites/default/files/styles/1920px/public/2025-03/26505-3228-tout-savoir-sur-lorange-un-tresor-de-vitamines-et-bien-plus-encore.jpg",
-		},
-		{
-			ID:          2,
-			Title:       "Apple",
-			Description: "Apple is red. I feel boring eating apple.",
-			Price:       210,
-			ImageURL:    "https://cdn.britannica.com/60/5760-050-FCD7CDA2/Apples-Malus-domestica.jpg",
-		},
-		{
-			ID:          3,
-			Title:       "Banana",
-			Description: "Banana is yellow. I like it's smell.",
-			Price:       40,
-			ImageURL:    "https://images.contentstack.io/v3/assets/bltcedd8dbd5891265b/blt66b8f1f45d70de9e/6665ec0febbbaa7d99a9f533/4440854-Banana-hero.jpg?q=70&width=3840&auto=webp",
-		},
-		{
-			ID:          4,
-			Title:       "Mango",
-			Description: "Mango is so yummy. I love mango.",
-			Price:       145,
-			ImageURL:    "https://blog2.pittmandavis.com/wp-content/uploads/2023/07/MangoFinal.jpg",
-		},
-		{
-			ID:          5,
-			Title:       "Grapes",
-			Description: "Grapes is testy. I like it.",
-			Price:       370,
-			ImageURL:    "https://img.ksl.com/slc/2513/251331/25133147.jpg?filter=kslv2/responsive_story_lg",
-		},
+	query := `
+		SELECT id, title, description, price, img_url
+		FROM product
+	`
+	err := r.db.Select(&productList, query)
+	if err != nil {
+		return nil, err
 	}
 
-	// append instance/object
-	r.productList = append(r.productList, products...)
+	return productList, nil
 }
